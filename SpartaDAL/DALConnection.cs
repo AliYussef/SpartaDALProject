@@ -11,17 +11,21 @@ namespace Sparta.Dal
     public static class DALConnection
     {
 
- 
         public static SqlConnection GetConnectionByName(string name)
         {
-       
             try
             {
-               //jihouoij
+                // create a string connection
                 string connString = ConfigurationManager.ConnectionStrings[name].ConnectionString;
+
+                // create a sql connection
                 SqlConnection connection = new SqlConnection(connString);
+
+                // open the connection
                 connection.Open();
-                return connection; // changed!
+
+                // return the connection
+                return connection; 
 
             } 
             catch (SqlException e)
@@ -30,9 +34,9 @@ namespace Sparta.Dal
                 Console.WriteLine(e.ToString());
                 return connection;
             }
-
         }
 
+        // a methos for closing the sql connection
         public static void CloseSqlConnection (SqlConnection connection)
         {
             connection.Close();

@@ -11,6 +11,7 @@ namespace Sparta.Dal
     {
         public static List<string> GetTestLijst()
         {
+            // make a list for the test tap
             List<string> test = new List<string>();
 
             test.Add("Ali");
