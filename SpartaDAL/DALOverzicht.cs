@@ -62,8 +62,9 @@ namespace Sparta.Dal
                 persoon.Persoonid = (int)reader["PersoonId"];
                 persoon.Naam = Convert.ToString(reader["Naam"]);
                 persoon.Achternaam = Convert.ToString(reader["Achternaam"]);
-                persoon.Categorie = (DeelnemerCategorie)reader["Categorie"];
-                persoon.Geboortedatum = DateTime.Parse(reader["GeboorteDatum"].ToString());
+                // persoon.Categorie = (DeelnemerCategorie)reader["Categorie"];
+                persoon.Geboortedatum = (DateTime)reader["GeboorteDatum"];
+               
                 Personen.Add(persoon);
             }
 
