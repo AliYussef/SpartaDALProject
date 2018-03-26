@@ -11,7 +11,7 @@ namespace Sparta.Dal
 {
     public static class DALOverzicht
     {
-        public static List <Cursus> GetCursussen()
+        public static List<Cursus> GetCursussen()
         {
             // create a sql connection
             SqlConnection connection = DALConnection.GetConnectionByName("Reader");
@@ -43,7 +43,7 @@ namespace Sparta.Dal
             // close all open connections
             reader.Close();
             DALConnection.CloseSqlConnection(connection);
- 
+
             return coursesList;
         }
 
@@ -65,8 +65,8 @@ namespace Sparta.Dal
                 persoon.Persoonid = (int)reader["PersoonId"];
                 persoon.Naam = Convert.ToString(reader["Naam"]);
                 persoon.Achternaam = Convert.ToString(reader["Achternaam"]);
-                persoon.Categorie = (DeelnemerCategorie)reader["Categorie"];
                 persoon.Geboortedatum = DateTime.Parse(reader["GeboorteDatum"].ToString());
+                persoon.Categorie = (DeelnemerCategorie)reader["Categorie"];
                 Personen.Add(persoon);
             }
 
