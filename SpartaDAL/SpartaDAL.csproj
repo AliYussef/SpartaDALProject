@@ -31,7 +31,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="SpartaModel">
-      <HintPath>..\..\Sparta\Sparta(1)\SpartaModel.dll</HintPath>
+      <HintPath>..\..\..\..\Documents\Институт\Third Term\project\week4\App\Sparta(1)\SpartaModel.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />

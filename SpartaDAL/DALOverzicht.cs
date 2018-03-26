@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.SqlClient;
 using Sparta.Model;
+using System.Globalization;
 
 namespace Sparta.Dal
 {
@@ -46,6 +47,34 @@ namespace Sparta.Dal
             return coursesList;
         }
 
+        public static List<Persoon> GetPersonen()
+        {
+            SqlConnection connection = DALConnection.GetConnectionByName("Reader");
+            List<Persoon> Personen = new List<Persoon>();
 
+            string SQLquery = "SELECT PersoonId, Naam, Achternaam, Categorie, GeboorteDatum FROM Persoon";
+
+            SqlCommand command = new SqlCommand(SQLquery, connection);
+
+            SqlDataReader reader = command.ExecuteReader();
+
+            while (reader.Read())
+            {
+                Persoon persoon = new Persoon();
+
+                persoon.Persoonid = (int)reader["PersoonId"];
+                persoon.Naam = Convert.ToString(reader["Naam"]);
+                persoon.Achternaam = Convert.ToString(reader["Achternaam"]);
+                persoon.Categorie = (DeelnemerCategorie)reader["Categorie"];
+                persoon.Geboortedatum = DateTime.Parse(reader["GeboorteDatum"].ToString());
+                Personen.Add(persoon);
+            }
+
+            reader.Close();
+
+            DALConnection.CloseSqlConnection(connection);
+
+            return Personen;
+        }
     }
 }
