@@ -68,6 +68,7 @@ namespace Sparta.Dal
                 Personen.Add(persoon);
             }
 
+
             reader.Close();
 
             DALConnection.CloseSqlConnection(connection);
