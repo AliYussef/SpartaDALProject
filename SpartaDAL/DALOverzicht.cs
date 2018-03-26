@@ -49,9 +49,12 @@ namespace Sparta.Dal
 
         public static List<Persoon> GetPersonen()
         {
+
             SqlConnection connection = DALConnection.GetConnectionByName("Reader");
+
             List<Persoon> Personen = new List<Persoon>();
 
+            //get information from DB
             string SQLquery = "SELECT PersoonId, Naam, Achternaam, Categorie, GeboorteDatum FROM Persoon";
 
             SqlCommand command = new SqlCommand(SQLquery, connection);
@@ -61,12 +64,13 @@ namespace Sparta.Dal
             while (reader.Read())
             {
                 Persoon persoon = new Persoon();
-
+                //save a person
                 persoon.Persoonid = (int)reader["PersoonId"];
                 persoon.Naam = Convert.ToString(reader["Naam"]);
                 persoon.Achternaam = Convert.ToString(reader["Achternaam"]);
                 persoon.Geboortedatum = DateTime.Parse(reader["GeboorteDatum"].ToString());
                 persoon.Categorie = (DeelnemerCategorie)reader["Categorie"];
+                //add to the list
                 Personen.Add(persoon);
             }
 
