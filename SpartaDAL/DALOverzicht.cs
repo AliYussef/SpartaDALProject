@@ -1,16 +1,43 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Data.SqlClient;
 using Sparta.Model;
-using System.Globalization;
 
 namespace Sparta.Dal
 {
     public static class DALOverzicht
     {
+        public static List<Locatie> GetLocaties()
+        {
+            SqlConnection connection = DALConnection.GetConnectionByName("Reader");
+
+            List<Locatie> locations = new List<Locatie>();
+
+            // select all columns (but no * because columns may be added in the future)
+            string sqlQuery = "SELECT LocatieId, Gebouw, Zaal, Omschrijving FROM Locatie";
+
+            SqlCommand command = new SqlCommand(sqlQuery, connection);
+            SqlDataReader reader = command.ExecuteReader();
+
+            while (reader.Read())
+            {
+                Locatie location = new Locatie();
+
+                location.Id = (int)reader["LocatieId"];
+                location.Gebouw = (string)reader["Gebouw"];
+                location.Zaal = (string)reader["Zaal"];
+                location.Omschrijving = (string)reader["Omschrijving"];
+
+                locations.Add(location);
+            }
+
+            // dispose of all open connections
+            reader.Close();
+            DALConnection.CloseSqlConnection(connection);
+
+            return locations;
+        }
+
         public static List<Cursus> GetCursussen()
         {
             // create a sql connection
