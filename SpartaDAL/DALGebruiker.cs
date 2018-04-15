@@ -15,7 +15,7 @@ namespace Sparta.Dal
         public static int GetLoginId(int persoonid, string pwdhash)
         {
             SqlConnection connection = DALConnection.GetConnectionByName("Reader");
-
+            // find login based on the person and the hash
             string query = @"
                 SELECT LoginId 
                 FROM Login
@@ -39,7 +39,7 @@ namespace Sparta.Dal
 
             return loginId;
         }
-
+        
         public static void UpdatePwd(int loginid, string pwdhash)
         {
             SqlConnection connection = DALConnection.GetConnectionByName("Writer");
