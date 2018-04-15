@@ -42,7 +42,7 @@ namespace Sparta.Dal
 
             return loginId;
         }
-        
+
         public static void UpdatePwd(int loginid, string pwdhash)
         {
             SqlConnection connection = DALConnection.GetConnectionByName("Writer");
@@ -64,7 +64,7 @@ namespace Sparta.Dal
         }
 
         public static void voegtoeContactInfo(Contact info)
-        {            
+        {
             SqlConnection connection = DALConnection.GetConnectionByName("Writer");
 
             //insert a new user information
@@ -89,7 +89,7 @@ namespace Sparta.Dal
                     @Telefoon
                 )";
             SqlCommand command = new SqlCommand(sqlQuery, connection);
-           
+
             //replace parameters by values
             command.Parameters.AddWithValue("PersoonId", info.Persoonid);
             command.Parameters.AddWithValue("Straat", info.Straat);
@@ -156,7 +156,7 @@ namespace Sparta.Dal
             //update user info, creating the query
             string sqlQuery = "UPDATE ContactInfo SET PersoonId = @PersoonId, Straat = @Straat, Huisnummer = @Huisnummer, Huisnummertoevoeging = @Huisnummertoevoeging, Plaats = @Plaats, Postcode = @Postcode, Email = @Email, Telefoon = @Telefoon WHERE ContactInfoId = @ContactInfoId";
             SqlCommand command = new SqlCommand(sqlQuery, connection);
-            
+
 
             //replace parameters by values
             command.Parameters.AddWithValue("PersoonId", info.Persoonid);
@@ -183,7 +183,8 @@ namespace Sparta.Dal
             int personId = PersonId(user);
 
             // write a sql query 
-            string SQLquery = "SELECT PersoonId, Naam, Achternaam, Categorie, GeboorteDatum FROM Persoon WHERE PersoonId = @PersoonId ";
+            string SQLquery = @"SELECT PersoonId, Naam, Achternaam, Categorie, GeboorteDatum 
+                                FROM Persoon WHERE PersoonId = @PersoonId ";
 
             // execute the sql query
             SqlCommand command = new SqlCommand(SQLquery, connection);
@@ -216,7 +217,8 @@ namespace Sparta.Dal
             SqlConnection connection = DALConnection.GetConnectionByName("Reader");
 
             // write a sql query 
-            string sqlQuery = "SELECT PersoonId FROM login where AanmeldNaam = @AanmeldNaam AND PwdHash = @PwdHash";
+            string sqlQuery = @"SELECT PersoonId FROM login 
+                                where AanmeldNaam = @AanmeldNaam AND PwdHash = @PwdHash";
 
             // execute the sql query
             SqlCommand command = new SqlCommand(sqlQuery, connection);
@@ -255,8 +257,11 @@ namespace Sparta.Dal
             SqlConnection connection = DALConnection.GetConnectionByName("Writer");
 
             // write a sql query 
-            string sqlQuery = "INSERT INTO Persoon(Naam, Achternaam, Categorie, GeboorteDatum) VALUES(@Naam, @Achternaam, @Categorie, @GeboorteDatum)";
-            string sqlQuery1 = "SELECT PersoonId FROM Persoon where Naam = @Naam AND Achternaam = @Achternaam";
+            string sqlQuery = @"INSERT INTO Persoon(Naam, Achternaam, Categorie, GeboorteDatum) 
+                                VALUES(@Naam, @Achternaam, @Categorie, @GeboorteDatum)";
+
+            string sqlQuery1 = @"SELECT PersoonId FROM Persoon 
+                                 where Naam = @Naam AND Achternaam = @Achternaam";
 
             // execute the sql query
             SqlCommand command = new SqlCommand(sqlQuery, connection);
@@ -284,7 +289,8 @@ namespace Sparta.Dal
             SqlConnection connection = DALConnection.GetConnectionByName("Writer");
 
             // write a sql query 
-            string sqlQuery = "INSERT INTO Login(AanmeldNaam, PwdHash, PersoonId) VALUES(@AanmeldNaam, @PwdHash, @PersoonId)";
+            string sqlQuery = @"INSERT INTO Login(AanmeldNaam, PwdHash, PersoonId) 
+                                VALUES(@AanmeldNaam, @PwdHash, @PersoonId)";
 
             // execute the sql query
             SqlCommand command = new SqlCommand(sqlQuery, connection);
