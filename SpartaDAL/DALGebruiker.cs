@@ -29,10 +29,13 @@ namespace Sparta.Dal
 
             SqlDataReader reader = command.ExecuteReader();
 
-            // should only be one, so no loop
-            reader.Read();
+            int loginId = 0;
 
-            int loginId = (int)reader["LoginId"];
+            // should only be one, so no loop
+            if (reader.Read())
+            {
+                loginId = (int)reader["LoginId"];
+            }
 
             reader.Close();
             DALConnection.CloseSqlConnection(connection);
@@ -61,29 +64,89 @@ namespace Sparta.Dal
         }
 
         public static void voegtoeContactInfo(Contact info)
-        {
-            
+        {            
             SqlConnection connection = DALConnection.GetConnectionByName("Writer");
 
             //insert a new user information
-            string sqlQuery = "INSERT INTO ContactInfo(ContactInfoId, PersoonId, Straat, Huisnummer, Huisnummertoevoeging, Plaats, Postcode, Email, Telefoon) VALUES(@ContactInfoId, @PersoonId, @Straat, @Huisnummer, @Huisnummertoevoeging, @Plaats, @Postcode, @Email, @Telefoon)";
+            string sqlQuery = @"
+                INSERT INTO ContactInfo(
+                    PersoonId,
+                    Straat,
+                    Huisnummer,
+                    Huisnummertoevoeging,
+                    Plaats,
+                    Postcode,
+                    Email,
+                    Telefoon
+                ) VALUES (
+                    @PersoonId,
+                    @Straat,
+                    @Huisnummer,
+                    @Huisnummertoevoeging,
+                    @Plaats,
+                    @Postcode,
+                    @Email,
+                    @Telefoon
+                )";
             SqlCommand command = new SqlCommand(sqlQuery, connection);
            
-
-            //replace parrameters by values
-            command.Parameters.AddWithValue("@ContactInfoId", info.Id);
-            command.Parameters.AddWithValue("@PersoonI", info.Persoonid);
-            command.Parameters.AddWithValue("@Straat", info.Straat);
-            command.Parameters.AddWithValue("@Huisnummertoevoeging", info.Huisnummertoevoeging);
-            command.Parameters.AddWithValue("@Plaats", info.Plaats);
-            command.Parameters.AddWithValue("@Postcode", info.Postcode);
-            command.Parameters.AddWithValue("@Email", info.Email);
-            command.Parameters.AddWithValue("@Telefoon", info.Telefoon);
+            //replace parameters by values
+            command.Parameters.AddWithValue("PersoonId", info.Persoonid);
+            command.Parameters.AddWithValue("Straat", info.Straat);
+            command.Parameters.AddWithValue("Huisnummer", info.Huisnummer);
+            command.Parameters.AddWithValue("Huisnummertoevoeging", info.Huisnummertoevoeging);
+            command.Parameters.AddWithValue("Plaats", info.Plaats);
+            command.Parameters.AddWithValue("Postcode", info.Postcode);
+            command.Parameters.AddWithValue("Email", info.Email);
+            command.Parameters.AddWithValue("Telefoon", info.Telefoon);
             command.ExecuteNonQuery();
             //close connection
 
             DALConnection.CloseSqlConnection(connection);
 
+        }
+
+        public static Contact GetContactInfoByPersoonId(int persoonId)
+        {
+            // NOTE: only here for testing! otherwise cannot test the other methods
+
+            SqlConnection connection = DALConnection.GetConnectionByName("Reader");
+
+            string query = @"
+                SELECT * FROM ContactInfo
+                WHERE PersoonId = @person
+            ";
+
+            SqlCommand command = new SqlCommand(query, connection);
+
+            command.Parameters.AddWithValue("person", persoonId);
+
+            SqlDataReader reader = command.ExecuteReader();
+
+            Contact contact = new Contact();
+
+            contact.Persoonid = persoonId;
+
+            if (!reader.Read())
+            {
+                // user not found
+                return contact;
+            }
+
+            contact.Id = (int)reader["ContactInfoId"];
+            contact.Persoonid = (int)reader["PersoonId"];
+            contact.Straat = (string)reader["Straat"];
+            contact.Huisnummer = (int)reader["Huisnummer"];
+            contact.Huisnummertoevoeging = (string)reader["Huisnummertoevoeging"];
+            contact.Plaats = (string)reader["Plaats"];
+            contact.Postcode = (string)reader["Postcode"];
+            contact.Email = (string)reader["Email"];
+            contact.Telefoon = (string)reader["Telefoon"];
+
+            reader.Close();
+            DALConnection.CloseSqlConnection(connection);
+
+            return contact;
         }
 
         public static void vernieuwContactInfo(Contact info)
@@ -96,14 +159,15 @@ namespace Sparta.Dal
             
 
             //replace parameters by values
-            command.Parameters.AddWithValue("@PersoonI", info.Persoonid);
-            command.Parameters.AddWithValue("@Straat", info.Straat);
-            command.Parameters.AddWithValue("@Huisnummertoevoeging", info.Huisnummertoevoeging);
-            command.Parameters.AddWithValue("@Plaats", info.Plaats);
-            command.Parameters.AddWithValue("@Postcode", info.Postcode);
-            command.Parameters.AddWithValue("@Email", info.Email);
-            command.Parameters.AddWithValue("@Telefoon", info.Telefoon);
-            command.Parameters.AddWithValue("@ContactInfoId", info.Id);
+            command.Parameters.AddWithValue("PersoonId", info.Persoonid);
+            command.Parameters.AddWithValue("Straat", info.Straat);
+            command.Parameters.AddWithValue("Huisnummer", info.Huisnummer);
+            command.Parameters.AddWithValue("Huisnummertoevoeging", info.Huisnummertoevoeging);
+            command.Parameters.AddWithValue("Plaats", info.Plaats);
+            command.Parameters.AddWithValue("Postcode", info.Postcode);
+            command.Parameters.AddWithValue("Email", info.Email);
+            command.Parameters.AddWithValue("Telefoon", info.Telefoon);
+            command.Parameters.AddWithValue("ContactInfoId", info.Id);
             command.ExecuteNonQuery();
             //close connection
 
