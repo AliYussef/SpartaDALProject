@@ -1,16 +1,58 @@
 ﻿using Sparta.Dal;
 using Sparta.Model;
-using System;
-using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SpartaDAL
 {
     class DALGebruiker
     {
+        public static int GetLoginId(int persoonid, string pwdhash)
+        {
+            SqlConnection connection = DALConnection.GetConnectionByName("Reader");
+
+            string query = @"
+                SELECT LoginId 
+                FROM Login
+                WHERE PersoonId = @person AND PwdHash = @hash;
+            ";
+
+            SqlCommand command = new SqlCommand(query, connection);
+
+            command.Parameters.AddWithValue("person", persoonid);
+            command.Parameters.AddWithValue("hash", pwdhash);
+
+            SqlDataReader reader = command.ExecuteReader();
+
+            // should only be one, so no loop
+            reader.Read();
+
+            int loginId = (int)reader["LoginId"];
+
+            reader.Close();
+            DALConnection.CloseSqlConnection(connection);
+
+            return loginId;
+        }
+
+        public static void UpdatePwd(int loginid, string pwdhash)
+        {
+            SqlConnection connection = DALConnection.GetConnectionByName("Writer");
+
+            string query = @"
+                UPDATE Login 
+                SET PwdHash = @hash
+                WHERE LoginId = @id;
+            ";
+
+            SqlCommand command = new SqlCommand(query, connection);
+
+            command.Parameters.AddWithValue("id", loginid);
+            command.Parameters.AddWithValue("hash", pwdhash);
+
+            command.ExecuteNonQuery();
+
+            DALConnection.CloseSqlConnection(connection);
+        }
 
         public static void voegtoeContactInfo(Contact info)
         {
