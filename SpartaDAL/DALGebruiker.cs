@@ -68,7 +68,7 @@ namespace Sparta.Dal
             //insert a new user information
             string sqlQuery = "INSERT INTO ContactInfo(ContactInfoId, PersoonId, Straat, Huisnummer, Huisnummertoevoeging, Plaats, Postcode, Email, Telefoon) VALUES(@ContactInfoId, @PersoonId, @Straat, @Huisnummer, @Huisnummertoevoeging, @Plaats, @Postcode, @Email, @Telefoon)";
             SqlCommand command = new SqlCommand(sqlQuery, connection);
-            SqlDataReader reader = command.ExecuteReader();
+           
 
             //replace parrameters by values
             command.Parameters.AddWithValue("@ContactInfoId", info.Id);
@@ -79,9 +79,9 @@ namespace Sparta.Dal
             command.Parameters.AddWithValue("@Postcode", info.Postcode);
             command.Parameters.AddWithValue("@Email", info.Email);
             command.Parameters.AddWithValue("@Telefoon", info.Telefoon);
-
+            command.ExecuteNonQuery();
             //close connection
-            reader.Close();
+
             DALConnection.CloseSqlConnection(connection);
 
         }
@@ -93,7 +93,7 @@ namespace Sparta.Dal
             //update user info, creating the query
             string sqlQuery = "UPDATE ContactInfo SET PersoonId = @PersoonId, Straat = @Straat, Huisnummer = @Huisnummer, Huisnummertoevoeging = @Huisnummertoevoeging, Plaats = @Plaats, Postcode = @Postcode, Email = @Email, Telefoon = @Telefoon WHERE ContactInfoId = @ContactInfoId";
             SqlCommand command = new SqlCommand(sqlQuery, connection);
-            SqlDataReader reader = command.ExecuteReader();
+            
 
             //replace parameters by values
             command.Parameters.AddWithValue("@PersoonI", info.Persoonid);
@@ -104,9 +104,9 @@ namespace Sparta.Dal
             command.Parameters.AddWithValue("@Email", info.Email);
             command.Parameters.AddWithValue("@Telefoon", info.Telefoon);
             command.Parameters.AddWithValue("@ContactInfoId", info.Id);
-
+            command.ExecuteNonQuery();
             //close connection
-            reader.Close();
+
             DALConnection.CloseSqlConnection(connection);
         }
 
