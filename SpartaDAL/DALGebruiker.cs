@@ -1,10 +1,16 @@
 ﻿using Sparta.Dal;
 using Sparta.Model;
+using System;
+using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace SpartaDAL
+namespace Sparta.Dal
 {
-    class DALGebruiker
+    public static class DALGebruiker
     {
         public static int GetLoginId(int persoonid, string pwdhash)
         {
@@ -102,7 +108,132 @@ namespace SpartaDAL
             //close connection
             reader.Close();
             DALConnection.CloseSqlConnection(connection);
-
         }
+
+        public static Persoon checkCredentials(Login user)
+        {
+            // create a sql connection
+            SqlConnection connection = DALConnection.GetConnectionByName("Reader");
+
+            // get a person ID
+            int personId = PersonId(user);
+
+            // write a sql query 
+            string SQLquery = "SELECT PersoonId, Naam, Achternaam, Categorie, GeboorteDatum FROM Persoon WHERE PersoonId = @PersoonId ";
+
+            // execute the sql query
+            SqlCommand command = new SqlCommand(SQLquery, connection);
+            command.Parameters.AddWithValue("@PersoonId", personId);
+            command.ExecuteNonQuery();
+
+            // read from db
+            SqlDataReader reader = command.ExecuteReader();
+
+            Persoon persoon = new Persoon();
+            while (reader.Read())
+            {
+                persoon.Persoonid = (int)reader["PersoonId"];
+                persoon.Naam = Convert.ToString(reader["Naam"]);
+                persoon.Achternaam = Convert.ToString(reader["Achternaam"]);
+                persoon.Geboortedatum = DateTime.Parse(reader["GeboorteDatum"].ToString());
+                persoon.Categorie = (DeelnemerCategorie)reader["Categorie"];
+            }
+
+            // close all connections
+            reader.Close();
+            DALConnection.CloseSqlConnection(connection);
+
+            return persoon;
+        }
+
+        public static int PersonId(Login aanmeld)
+        {
+            // create a sql connection
+            SqlConnection connection = DALConnection.GetConnectionByName("Reader");
+
+            // write a sql query 
+            string sqlQuery = "SELECT PersoonId FROM login where AanmeldNaam = @AanmeldNaam AND PwdHash = @PwdHash";
+
+            // execute the sql query
+            SqlCommand command = new SqlCommand(sqlQuery, connection);
+            command.Parameters.AddWithValue("@AanmeldNaam", aanmeld.Naam);
+            command.Parameters.AddWithValue("@PwdHash", aanmeld.Pwdhash);
+            command.ExecuteNonQuery();
+            SqlDataReader reader = command.ExecuteReader();
+
+            int personId = 0;
+            while (reader.Read())
+            {
+                personId = (int)reader["PersoonId"];
+            }
+
+            // close all connections
+            reader.Close();
+            DALConnection.CloseSqlConnection(connection);
+
+            return personId;
+        }
+
+        public static void RegistreerPersoon(DeelnemerCategorie category, string naam, string achternaam,
+            DateTime gebdatum, Login aanmeld)
+        {
+            // add new user to the person table
+            int persId = GetPersonId(category, naam, achternaam, gebdatum);
+
+            // add new person to the login table
+            SetLoginInfo(aanmeld, persId);
+        }
+
+        public static int GetPersonId(DeelnemerCategorie category, string naam, string achternaam,
+            DateTime gebdatum)
+        {
+            // create a sql connection
+            SqlConnection connection = DALConnection.GetConnectionByName("Writer");
+
+            // write a sql query 
+            string sqlQuery = "INSERT INTO Persoon(Naam, Achternaam, Categorie, GeboorteDatum) VALUES(@Naam, @Achternaam, @Categorie, @GeboorteDatum)";
+            string sqlQuery1 = "SELECT PersoonId FROM Persoon where Naam = @Naam AND Achternaam = @Achternaam";
+
+            // execute the sql query
+            SqlCommand command = new SqlCommand(sqlQuery, connection);
+            command.Parameters.AddWithValue("@Naam", naam);
+            command.Parameters.AddWithValue("@Achternaam", achternaam);
+            command.Parameters.AddWithValue("@Categorie", category);
+            command.Parameters.AddWithValue("@GeboorteDatum", gebdatum);
+            command.ExecuteNonQuery();
+
+            // execute the sql query
+            SqlCommand command1 = new SqlCommand(sqlQuery1, connection);
+            command1.Parameters.AddWithValue("@Naam", naam);
+            command1.Parameters.AddWithValue("@Achternaam", achternaam);
+            int id = (int)command1.ExecuteScalar();
+
+            // close the connection
+            DALConnection.CloseSqlConnection(connection);
+
+            return id;
+        }
+
+        public static void SetLoginInfo(Login aanmeld, int persId)
+        {
+            // create a sql connection
+            SqlConnection connection = DALConnection.GetConnectionByName("Writer");
+
+            // write a sql query 
+            string sqlQuery = "INSERT INTO Login(AanmeldNaam, PwdHash, PersoonId) VALUES(@AanmeldNaam, @PwdHash, @PersoonId)";
+
+            // execute the sql query
+            SqlCommand command = new SqlCommand(sqlQuery, connection);
+            command.Parameters.AddWithValue("@AanmeldNaam", aanmeld.Naam);
+            command.Parameters.AddWithValue("@PwdHash", aanmeld.Pwdhash);
+            command.Parameters.AddWithValue("@PersoonId", persId);
+            command.ExecuteNonQuery();
+
+            // close the connection
+            DALConnection.CloseSqlConnection(connection);
+        }
+
+
+
     }
 }
